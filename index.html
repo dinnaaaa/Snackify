@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snackify - Teman Ngemil Terbaik</title>
+    <meta name="description" content="Temukan berbagai macam snack berkualitas dengan harga terjangkau. Dari kacang-kacangan hingga keripik, semua ada di Snackify!">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom Styles -->
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .hero-bg {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+        
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .order-steps {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .step {
+            background-color: #cce5ff;
+            padding: 20px;
+            width: 200px;
+            border-radius: 10px;
+            font-size: 14px;
+            box-shadow: 0 4px 0 #999;
+            text-align: left;
+        }
+
+        .step strong {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .btn-order {
+            background-color: #cce5ff;
+            color: #000;
+            font-weight: bold;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 0 #999;
+            transition: 0.2s ease;
+        }
+
+        .btn-order:hover {
+            background-color: #b3d8ff;
+        }
+
+        .step-number {
+            background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0 auto 1rem;
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .step-card {
+            background: linear-gradient(135deg, #F8FAFC, #E2E8F0);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .step-card:hover {
+            border-color: #3B82F6;
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .wa-float {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #25D366;
+            color: white;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .wa-float:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body class="bg-white">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-blue-600 to-blue-500 shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md">
+                        <span class="text-blue-600 font-bold text-lg">S</span>
+                    </div>
+                    <h1 class="text-white text-xl font-bold">SNACKIFY</h1>
+                </div>
+
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="#home" class="text-white hover:text-blue-100 transition-colors">Home</a>
+                    <a href="#products" class="text-white hover:text-blue-100 transition-colors">Products</a>
+                    <a href="#about" class="text-white hover:text-blue-100 transition-colors">About</a>
+                    <a href="#testimonial" class="text-white hover:text-blue-100 transition-colors">Testimonial</a>
+                    <a href="#contact" class="text-white hover:text-blue-100 transition-colors">Contact</a>
+                </nav>
+
+                <div class="flex items-center gap-4">
+                    <button class="text-white hover:text-blue-100 transition-colors">
+                        <i class="fas fa-user"></i>
+                    </button>
+                    <button class="text-white relative hover:bg-blue-700 p-2 rounded-lg transition-colors" onclick="toggleCart()">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center hidden">0</span>
+                    </button>
+                    
+                    <!-- Mobile Menu Button -->
+                    <button class="md:hidden text-white" onclick="toggleMobileMenu()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="md:hidden hidden bg-blue-700 pb-4">
+                <a href="#home" class="block px-4 py-2 text-white hover:bg-blue-800">Home</a>
+                <a href="#products" class="block px-4 py-2 text-white hover:bg-blue-800">Products</a>
+                <a href="#about" class="block px-4 py-2 text-white hover:bg-blue-800">About</a>
+                <a href="#testimonial" class="block px-4 py-2 text-white hover:bg-blue-800">Testimonial</a>
+                <a href="#contact" class="block px-4 py-2 text-white hover:bg-blue-800">Contact</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Shopping Cart Sidebar -->
+    <div id="cart-sidebar" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+        <div class="fixed right-0 top-0 h-full w-96 bg-white shadow-lg p-6 overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold">Keranjang Belanja</h2>
+                <button onclick="toggleCart()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <div id="cart-items" class="space-y-4 mb-6">
+                <div class="text-center py-12">
+                    <div class="text-6xl mb-4">🛒</div>
+                    <p class="text-gray-500 mb-4">Keranjang kosong</p>
+                    <button onclick="toggleCart()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg">
+                        Mulai Belanja
+                    </button>
+                </div>
+            </div>
+
+            <div id="cart-total" class="border-t pt-4 hidden">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="font-bold">Total:</span>
+                    <span id="total-price" class="font-bold text-lg text-blue-600">Rp 0</span>
+                </div>
+                <button class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg" onclick="checkout()">
+                    Checkout Sekarang
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative bg-gradient-to-br from-blue-50 to-indigo-100 py-20 overflow-hidden">
+        <div class="absolute inset-0 opacity-5">
+            <div class="w-full h-full bg-gradient-to-r from-blue-400 to-purple-400"></div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div class="space-y-8 fade-in">
+                    <div class="space-y-4">
+                        <div class="bg-blue-100 text-blue-800 px-4 py-2 rounded-full inline-block">
+                            🎉 Teman Ngemil Terbaik
+                        </div>
+                        <h1 class="text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
+                            Selamat Datang di
+                            <span class="text-blue-600 block">Snackify!</span>
+                        </h1>
+                        <p class="text-xl text-gray-600 leading-relaxed">
+                            Temukan berbagai macam camilan berkualitas dengan cita rasa autentik Indonesia. 
+                            Dari kacang-kacangan hingga keripik, semua ada di Snackify!
+                        </p>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg rounded-lg transition-colors flex items-center justify-center gap-2" onclick="scrollToSection('products')">
+                            ORDER NOW
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                        <button class="border-2 border-blue-600 text-blue-600 hover:bg-blue-50 px-8 py-4 text-lg rounded-lg transition-colors" onclick="scrollToSection('products')">
+                            SEE MORE
+                        </button>
+                    </div>
+
+                    <div class="flex items-center gap-8 pt-4">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-blue-600">2K+</div>
+                            <div class="text-sm text-gray-600">Happy Customers</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-blue-600">40+</div>
+                            <div class="text-sm text-gray-600">Products</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-blue-600">4.8★</div>
+                            <div class="text-sm text-gray-600">Rating</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="relative fade-in">
+                    <div class="relative z-10">
+                        <div class="w-full max-w-lg mx-auto">
+                            <div class="relative">
+                                <div class="w-80 h-80 bg-gradient-to-br from-orange-400 to-red-400 rounded-3xl flex items-center justify-center shadow-2xl transform rotate-3 floating">
+                                    <div class="text-8xl">🍿</div>
+                                </div>
+                                <div class="absolute -top-6 -right-6 w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-xl transform -rotate-12 floating" style="animation-delay: 0.5s;">
+                                    <div class="text-3xl">🥜</div>
+                                </div>
+                                <div class="absolute -bottom-6 -left-6 w-20 h-20 bg-gradient-to-br from-green-500 to-teal-500 rounded-2xl flex items-center justify-center shadow-xl transform rotate-12 floating" style="animation-delay: 1s;">
+                                    <div class="text-2xl">🍪</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full blur-3xl opacity-20 transform scale-150"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="about" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 fade-in">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Kenapa Pilih Snackify?</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Kami berkomitmen memberikan pengalaman ngemil terbaik dengan kualitas premium dan pelayanan terdepan
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="text-center p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl card-hover fade-in">
+                    <div class="text-4xl mb-4">🏆</div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Kualitas Premium</h3>
+                    <p class="text-gray-600">Semua produk dipilih dengan standar kualitas tinggi dan bersertifikat halal MUI</p>
+                </div>
+                <div class="text-center p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl card-hover fade-in">
+                    <div class="text-4xl mb-4">🚚</div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Pengiriman Cepat</h3>
+                    <p class="text-gray-600">Estimasi 1-3 hari kerja dengan packaging aman dan rapi</p>
+                </div>
+                <div class="text-center p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl card-hover fade-in">
+                    <div class="text-4xl mb-4">💰</div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Harga Terjangkau</h3>
+                    <p class="text-gray-600">Dapatkan snack berkualitas dengan harga yang ramah di kantong</p>
+                </div>
+                <div class="text-center p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl card-hover fade-in">
+                    <div class="text-4xl mb-4">🎯</div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Pelayanan 24/7</h3>
+                    <p class="text-gray-600">Customer service siap membantu kapan saja melalui WhatsApp</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section id="products" class="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center mb-12 fade-in">
+                <div>
+                    <h2 class="text-4xl font-bold text-gray-900 mb-4">Produk Unggulan</h2>
+                    <p class="text-xl text-gray-600">Snack favorit yang paling disukai pelanggan</p>
+                </div>
+                <button class="text-blue-600 hover:text-blue-800 font-semibold flex items-center gap-2" onclick="showAllProducts()">
+                    Lihat Semua
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6" id="products-grid">
+                <!-- Products will be loaded here by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Steps Grid -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+                <!-- Step 1 -->
+                <div class="step-card p-8 rounded-2xl text-center fade-in">
+                    <div class="step-number">1</div>
+                    <div class="text-4xl mb-4">🛒</div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Pilih Produk</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed">
+                        Jelajahi katalog produk kami dan pilih snack favorit Anda. Klik "Add to Cart" untuk menambahkan ke keranjang belanja.
+                    </p>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="step-card p-8 rounded-2xl text-center fade-in">
+                    <div class="step-number">2</div>
+                    <div class="text-4xl mb-4">📝</div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Isi Data</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed">
+                        Lengkapi data diri Anda: nama, nomor HP, alamat lengkap, dan pilih metode pembayaran yang diinginkan.
+                    </p>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="step-card p-8 rounded-2xl text-center fade-in">
+                    <div class="step-number">3</div>
+                    <div class="text-4xl mb-4">💬</div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Konfirmasi</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed">
+                        Pesanan otomatis dikirim ke WhatsApp kami. Tim customer service akan mengkonfirmasi pesanan Anda.
+                    </p>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="step-card p-8 rounded-2xl text-center fade-in">
+                    <div class="step-number">4</div>
+                    <div class="text-4xl mb-4">🚚</div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Terima Pesanan</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed">
+                        Pesanan akan diproses dan dikirim dalam 1-3 hari kerja. Nikmati snack berkualitas di rumah Anda!
+                    </p>
+                </div>
+            </div>
+
+    <!-- Payment Methods -->
+            <div class="mt-16 fade-in">
+                <div class="text-center mb-8">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Metode Pembayaran</h3>
+                    <p class="text-gray-600">Kami menerima berbagai metode pembayaran untuk kemudahan Anda</p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-6">
+                    <!-- Transfer Bank -->
+                    <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-xl shadow-lg text-center">
+                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-university text-blue-600 text-2xl"></i>
+                        </div>
+                        <h4 class="font-bold text-gray-900 mb-2">Transfer Bank</h4>
+                        <p class="text-gray-600 text-sm mb-3">BCA, BNI, Mandiri, BRI</p>
+                        <div class="text-xs text-gray-500">Konfirmasi otomatis</div>
+                    </div>
+
+                    <!-- E-Wallet -->
+                    <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-xl shadow-lg text-center">
+                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-mobile-alt text-green-600 text-2xl"></i>
+                        </div>
+                        <h4 class="font-bold text-gray-900 mb-2">E-Wallet</h4>
+                        <p class="text-gray-600 text-sm mb-3">GoPay, OVO, DANA, ShopeePay</p>
+                        <div class="text-xs text-gray-500">Pembayaran instan</div>
+                    </div>
+
+                    <!-- COD -->
+                    <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-xl shadow-lg text-center">
+                        <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-hand-holding-usd text-orange-600 text-2xl"></i>
+                        </div>
+                        <h4 class="font-bold text-gray-900 mb-2">COD</h4>
+                        <p class="text-gray-600 text-sm mb-3">Cash on Delivery</p>
+                        <div class="text-xs text-gray-500">Area tertentu</div>
+                    </div>
+                </div>
+            </div>
+
+    <!-- Testimonials -->
+    <section id="testimonial" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 fade-in">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Apa Kata Mereka?</h2>
+                <p class="text-xl text-gray-600">Testimoni dari pelanggan setia Snackify</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl card-hover fade-in">
+                    <div class="flex items-center gap-1 mb-3">
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                    </div>
+                    <p class="text-gray-700 italic mb-4">"Snackify benar-benar jadi penyelamat saat lagi WFH! Kacang almond dan keripik singkongnya enak banget. Pengiriman juga cepat!"</p>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">S</div>
+                        <div>
+                            <div class="font-semibold text-gray-900">Andini Sarah</div>
+                            <div class="text-sm text-gray-600">Jakarta</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl card-hover fade-in">
+                    <div class="flex items-center gap-1 mb-3">
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                    </div>
+                    <p class="text-gray-700 italic mb-4">"Pelayanan customer service nya ramah banget. Pas ada masalah dengan pengiriman, langsung dibantu dengan baik. Produknya juga fresh!"</p>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">B</div>
+                        <div>
+                            <div class="font-semibold text-gray-900">Kirana Anastasya</div>
+                            <div class="text-sm text-gray-600">Surabaya</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl card-hover fade-in">
+                    <div class="flex items-center gap-1 mb-3">
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="far fa-star text-gray-300"></i>
+                    </div>
+                    <p class="text-gray-700 italic mb-4">"Suka banget sama variasi snacknya! Dari yang manis sampai asin ada semua. Harganya juga reasonable untuk kualitas yang didapat."</p>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">M</div>
+                        <div>
+                            <div class="font-semibold text-gray-900">Fathi alfikri</div>
+                            <div class="text-sm text-gray-600">Bandung</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 bg-gradient-to-r from-blue-600 to-blue-500">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="max-w-3xl mx-auto space-y-8 fade-in">
+                <h2 class="text-4xl lg:text-5xl font-bold text-white">Siap Mulai Ngemil Bareng Snackify?</h2>
+                <p class="text-xl text-blue-100">
+                    Bergabunglah dengan ribuan pelanggan yang sudah merasakan kelezatan snack premium kami
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button class="bg-white text-blue-600 hover:bg-blue-50 px-8 py-4 text-lg rounded-lg transition-colors flex items-center justify-center gap-2" onclick="orderNow()">
+                        Mulai Belanja Sekarang
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                    <button class="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 text-lg rounded-lg transition-colors" onclick="scrollToSection('about')">
+                        Pelajari Lebih Lanjut
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="bg-gray-900 text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+                            <span class="text-white font-bold">S</span>
+                        </div>
+                        <span class="text-xl font-bold">SNACKIFY</span>
+                    </div>
+                    <p class="text-gray-400">
+                        Teman ngemil terbaik dengan berbagai pilihan snack berkualitas premium untuk semua kalangan.
+                    </p>
+                    <div class="flex items-center gap-2 text-gray-400">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span class="text-sm">Condong Catur, Daerah Istimewa Yogyakarta</span>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-bold mb-4">Menu</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#home" class="hover:text-white transition-colors">Home</a></li>
+                        <li><a href="#products" class="hover:text-white transition-colors">Products</a></li>
+                        <li><a href="#about" class="hover:text-white transition-colors">About Us</a></li>
+                        <li><a href="#testimonial" class="hover:text-white transition-colors">Testimonial</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="font-bold mb-4">Support</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">FAQ</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Terms & Conditions</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Return Policy</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="font-bold mb-4">Contact Us</h3>
+                    <div class="space-y-3 text-gray-400">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-phone"></i>
+                            <span class="text-sm">08977390157</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-envelope"></i>
+                            <span class="text-sm">hello@snackify.com</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fab fa-instagram"></i>
+                            <span class="text-sm">@snackify</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center">
+                <p class="text-gray-400">© 2025 Snackify. All rights reserved</p>
+            </div>
+        </div>
+    </footer>
+
+     <!-- Floating WhatsApp Icon -->
+    <a href="https://wa.me/6285173302157?text=Halo! Saya tertarik dengan produk Snackify." target="_blank" class="wa-float">
+      <i class="fab fa-whatsapp fa-lg"></i>
+
+    <!-- JavaScript -->
+    <script>
+        // Sample products data
+        const products = [
+            { id: 1, name: "Kacang Telur", price: 15000, image: "https://via.placeholder.com/150x150/FF6B6B/FFFFFF?text=🥜", rating: 4.8 },
+            { id: 2, name: "Coklat Warna-Warni", price: 12000, image: "https://via.placeholder.com/150x150/4ECDC4/FFFFFF?text=🍫", rating: 4.9 },
+            { id: 3, name: "Keripik Singkong", price: 10000, image: "https://via.placeholder.com/150x150/45B7D1/FFFFFF?text=🍟", rating: 4.7 },
+            { id: 4, name: "Kacang Almond", price: 25000, image: "https://via.placeholder.com/150x150/F7DC6F/FFFFFF?text=🌰", rating: 4.9 },
+            { id: 5, name: "Keripik Tempe", price: 8000, image: "https://via.placeholder.com/150x150/BB8FCE/FFFFFF?text=🍘", rating: 4.6 },
+            { id: 6, name: "Biji Bunga Matahari", price: 18000, image: "https://via.placeholder.com/150x150/58D68D/FFFFFF?text=🌻", rating: 4.8 }
+        ];
+
+        let cart = [];
+
+        // Load products
+        function loadProducts() {
+            const productsGrid = document.getElementById('products-grid');
+            productsGrid.innerHTML = '';
+
+            products.forEach(product => {
+                const productCard = `
+                    <div class="bg-white rounded-xl overflow-hidden shadow-lg card-hover fade-in">
+                        <div class="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center relative overflow-hidden">
+                            <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover">
+                            <div class="absolute top-2 right-2 bg-white rounded-full px-2 py-1 text-xs font-semibold flex items-center gap-1">
+                                <i class="fas fa-star text-yellow-400"></i>
+                                ${product.rating}
+                            </div>
+                        </div>
+                        <div class="p-4 space-y-3">
+                            <h3 class="font-semibold text-sm text-gray-900">${product.name}</h3>
+                            <p class="text-blue-600 font-bold text-lg">Rp ${product.price.toLocaleString()}</p>
+                            <button onclick="addToCart(${product.id})" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition-colors">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                `;
+                productsGrid.innerHTML += productCard;
+            });
+        }
+
+        // Add to cart function
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            const existingItem = cart.find(item => item.id === productId);
+
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+
+            updateCartUI();
+            showNotification(`${product.name} ditambahkan ke keranjang!`);
+        }
+
+        // Update cart UI
+        function updateCartUI() {
+            const cartCount = document.getElementById('cart-count');
+            const cartItems = document.getElementById('cart-items');
+            const cartTotal = document.getElementById('cart-total');
+            const totalPrice = document.getElementById('total-price');
+
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+            if (totalItems > 0) {
+                cartCount.textContent = totalItems;
+                cartCount.classList.remove('hidden');
+            } else {
+                cartCount.classList.add('hidden');
+            }
+
+            if (cart.length === 0) {
+                cartItems.innerHTML = `
+                    <div class="text-center py-12">
+                        <div class="text-6xl mb-4">🛒</div>
+                        <p class="text-gray-500 mb-4">Keranjang kosong</p>
+                        <button onclick="toggleCart()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg">
+                            Mulai Belanja
+                        </button>
+                    </div>
+                `;
+                cartTotal.classList.add('hidden');
+            } else {
+                cartItems.innerHTML = cart.map(item => `
+                    <div class="flex items-center gap-3 p-3 border rounded-lg">
+                        <img src="${item.image}" alt="${item.name}" class="w-12 h-12 rounded">
+                        <div class="flex-1">
+                            <h3 class="font-medium text-sm">${item.name}</h3>
+                            <p class="text-blue-600 font-bold">Rp ${item.price.toLocaleString()}</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="updateQuantity(${item.id}, ${item.quantity - 1})" class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">-</button>
+                            <span class="w-8 text-center">${item.quantity}</span>
+                            <button onclick="updateQuantity(${item.id}, ${item.quantity + 1})" class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">+</button>
+                        </div>
+                    </div>
+                `).join('');
+                
+                totalPrice.textContent = `Rp ${totalAmount.toLocaleString()}`;
+                cartTotal.classList.remove('hidden');
+            }
+        }
+
+        // Update quantity
+        function updateQuantity(productId, newQuantity) {
+            if (newQuantity <= 0) {
+                cart = cart.filter(item => item.id !== productId);
+            } else {
+                const item = cart.find(item => item.id === productId);
+                if (item) {
+                    item.quantity = newQuantity;
+                }
+            }
+            updateCartUI();
+        }
+
+        // Toggle cart sidebar
+        function toggleCart() {
+            const cartSidebar = document.getElementById('cart-sidebar');
+            cartSidebar.classList.toggle('hidden');
+        }
+
+        // Toggle mobile menu
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        }
+
+        // Scroll to section
+        function scrollToSection(sectionId) {
+            document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Show all products
+        function showAllProducts() {
+            scrollToSection('products');
+        }
+
+        // Order now function
+        function orderNow() {
+            const message = "Halo! Saya tertarik dengan produk Snackify. Bisa info lebih lanjut?";
+            const whatsappUrl = `https://wa.me/6285173302157?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // Checkout function
+        function checkout() {
+            if (cart.length === 0) {
+                showNotification('Keranjang masih kosong!');
+                return;
+            }
+
+            const orderDetails = cart.map(item => 
+                `${item.name} x${item.quantity} = Rp ${(item.price * item.quantity).toLocaleString()}`
+            ).join('\n');
+
+            const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+            const message = `*PESANAN SNACKIFY*\n\n*Detail Pesanan:*\n${orderDetails}\n\n*Total:* Rp ${totalAmount.toLocaleString()}\n\nMohon konfirmasi pesanan ini. Terima kasih!`;
+            
+            const whatsappUrl = `https://wa.me/6285173302157?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+            
+            // Clear cart after order
+            cart = [];
+            updateCartUI();
+            toggleCart();
+            showNotification('Pesanan dikirim ke WhatsApp!');
+        }
+
+        // Show notification
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-20 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Fade in animation on scroll
+        function handleScrollAnimation() {
+            const elements = document.querySelectorAll('.fade-in');
+            elements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const elementVisible = 150;
+
+                if (elementTop < window.innerHeight - elementVisible) {
+                    element.classList.add('visible');
+                }
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProducts();
+            updateCartUI();
+            handleScrollAnimation();
+        });
+
+        // Scroll event listener
+        window.addEventListener('scroll', handleScrollAnimation);
+
+        // Close cart when clicking outside
+        document.getElementById('cart-sidebar').addEventListener('click', function(e) {
+            if (e.target === this) {
+                toggleCart();
+            }
+        });
+    </script>
+</body>
+</html>
