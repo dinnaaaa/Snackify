@@ -753,7 +753,7 @@
 
             const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
-            const message = `*PESANAN SNACKIFY*\n\n Nama:\n Alamat:\n Pembayaran:\n *Detail Pesanan:*\n${orderDetails}\n\n*Total:* Rp ${totalAmount.toLocaleString()}\n\nMohon konfirmasi pesanan ini. Terima kasih!`;
+            const message = `*PESANAN SNACKIFY*\n\n Nama:\n Alamat:\n Pembayaran:\n\n *Detail Pesanan:*\n${orderDetails}\n\n*Total:* Rp ${totalAmount.toLocaleString()}\n\nMohon konfirmasi pesanan ini. Terima kasih!`;
             
             const whatsappUrl = `https://wa.me/6285173302157?text=${encodeURIComponent(message)}`;
             window.open(whatsappUrl, '_blank');
